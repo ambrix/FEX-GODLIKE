@@ -54,20 +54,20 @@ so-called \emph{meta-heuristic optimizer}, which uses a
 probabilistic rules to generate a new population which converges
 to the global minimum of the objective function with high
 probability. Over the years, many such algorithms have been
-developed, of which the Genetic Algorithm (GA), Differential
-Evolution (DE), Particle Swarm Optimization (PSO) and Adaptive
-Simulated Annealing (ASA) received more attention.
+developed, of which the Genetic Algorithm (\gls{GA}), Differential
+Evolution (\gls{DE}), Particle Swarm Optimization (\gls{PSO}) and
+Adaptive Simulated Annealing (ASA) received more attention.
 \\ \\
 Although meta-heuristic optimization algorithms usually require
 quite many function evaluations, their popularity grew enormously
 due to their ability to find global optima even in extremely
 difficult problems and with relatively low population sizes.
-Moreover, their elegance and simplicity appealed to many people --
-a thorough understanding of other optimization algorithms that
-existed at the time (which were much harder to implement, and did
-not always find the \emph{global} optimum), was no longer
-required, and problems could be optimized much faster (and usually
-much better) than was previously possible.
+Moreover, their elegance and simplicity appealed to many
+people~--~ a thorough understanding of other optimization
+algorithms that existed at the time (which were much harder to
+implement, and did not always find the \emph{global} optimum), was
+no longer required, and problems could be optimized much faster
+(and usually much better) than was previously possible.
 
 \chapter{Single-objective Optimization}
 Originally, the aforementioned meta-heuristic algorithms were
@@ -109,7 +109,7 @@ population, and a new population is created based on the function
 values of the initial population, and a certain degree of
 randomness. The four aforementioned algorithms do this as follows:
 
-\section{GA (based on natural evolution)}
+\section{\gls{GA} (based on natural evolution)}
 
 \begin{enumerate}
 
@@ -149,10 +149,10 @@ the better of the two parents is inserted into the new population.
 
 Steps 1-6 are repeated until ``convergence''.
 \\ \\
-The original GA used a \emph{binary} representation of the
-population, i.e., each individual is represented by \emph{bits} in
-stead of real numbers. Crossover and mutation are also carried out
-bit wise, that is
+The original \gls{GA} used a \emph{binary} representation of the
+population, i.e., each individual is represented by \emph{bits}
+instead of real numbers. Crossover and mutation are also carried
+out bit wise, that is
 
 \begin{eqnarray*}
      parent1 &=& [10110011010010\ldots00110110001001]\\
@@ -173,7 +173,7 @@ numbers to avoid the costly conversion to binary and back, etc.
 But these ``rules-of-thumb'' usually need to be tested for each
 new problem.
 
-\section{DE (based on globalized pseudo-derivatives)}
+\section{\gls{DE} (based on globalized pseudo-derivatives)}
 
 \begin{enumerate}
 
@@ -217,11 +217,11 @@ between two new, \emph{randomly} selected vectors, so on average,
 the solutions will tend to go to where the average slope is zero,
 and the function globally minimal. Sometimes this operation is
 called the \emph{global pseudo-derivative}, and it is the key to
-the power of the DE algorithm.
+the power of the \gls{DE} algorithm.
 \\ \\
 Numerous variations on this basic algorithm exist. However, they
-normally improve DE's performance only marginally, and as such,
-they will not be mentioned here.
+normally improve \gls{DE}'s performance only marginally, and as
+such, they will not be mentioned here.
 
 \section{ASA (based on the laws of thermodynamics)}
 
@@ -263,12 +263,13 @@ has the form
 where $0 < c < 1$ is a constant. This form will decrease the
 temperature logarithmically, just as it would in physical system
 undergoing cooling\footnote{The algorithm described above is how
-it is implemented in GODLIKE. Do note that the algorithm described
-above is by no means \emph{adaptive}~--~I just gave it that title
-as a placeholder for future work to be carried out. Adaptive SA
-means that the algorithm automatically adjusts the cooling
-schedule and the Boltzmann constant to optimize the quality of the
-converged solution. But as of yet, that is not yet implemented.}.
+it is implemented in \gls{GODLIKE}. Do note that the algorithm
+described above is by no means \emph{adaptive}~--~I just gave it
+that title as a placeholder for future work to be carried out.
+Adaptive \gls{SA} means that the algorithm automatically adjusts
+the cooling schedule and the Boltzmann constant to optimize the
+quality of the converged solution. But as of yet, that is not yet
+implemented.}.
 
 \end{enumerate}
 
@@ -287,7 +288,7 @@ Originally, Simulated Annealing was built around a single solution
 into a population-based method (just use $N$ randomly generated
 initial conditions).
 
-\section{PSO (based on swarm intelligence)}
+\section{\gls{PSO} (based on swarm intelligence)}
 
 \begin{enumerate}
 
@@ -385,8 +386,8 @@ protective magnetosphere will cause all sorts of illnesses in the
 crew. Thus, finding the minimum time is also highly desirable
 (equal to minimizing $f_{time}(x)$).
 \\ \\
-In theory it is quite possible to go to Mars in only one week --
-just bring an enormous rocket (large accelerations aside).
+In theory it is quite possible to go to Mars in only one
+week~--~just bring an enormous rocket (large accelerations aside).
 However, to go there in only one week requires \emph{vast} amounts
 of propellant, so that almost \emph{nothing} will be left in Mars
 orbit, let alone for the return trip. On the other hand, going to
@@ -409,7 +410,7 @@ be obtained. This process is extremely tedious, and should be
 re-done for \emph{every} new optimization problem.
 \\ \\
 For such problems, it is actually most desirable to get the best
-\emph{compromise} between the two objectives, in stead of the
+\emph{compromise} between the two objectives, instead of the
 optimum of the most un-biased sum of both. Moreover, as
 optimization goes in large-scale projects, it is also desirable to
 have a \emph{set} of different good compromises, so that these
@@ -467,7 +468,7 @@ solutions are non-dominated:
 
 \item Create an offspring population $Q$ from the parent
 population $P$ with the usual crossover and mutation operators
-from a GA.
+from a \gls{GA}.
 
 \item Count the number of solutions $y_i$ that dominate the
 current solution $x_i$. Do this for \emph{all} individuals from
@@ -515,7 +516,8 @@ $Q$ and $R$.
 
 \item Create a new offspring population $Q_{i+1}$, equal in size
 as the original $P$, $Q$ and $R$, using crossover and mutation
-from a GA, using members from the subset $P_{i+1}$ as parents.
+from a \gls{GA}, using members from the subset $P_{i+1}$ as
+parents.
 
 \end{enumerate}
 
@@ -561,15 +563,16 @@ another, while still not being even close to the Pareto front, is
 quite large. This necessitates using large population sizes, thus
 requiring many function evaluations.
 \\ \\
-The GA, DE, PSO and ASA algorithm have various operators that try
-to prevent this problem. In GA, it is the mutation operator that
-sometimes generates a solution very far from the other population
-members, increasing its robustness. In PSO, it is the fact that
-sometimes solutions get assigned very large changes in their
-velocities, especially when being very far removed from the
-attractors. However, as found in the literature, premature
-convergence still frequently occurs and necessitates several
-re-runs to make sure the global optimum is found.
+The \gls{GA}, \gls{DE}, \gls{PSO} and ASA algorithm have various
+operators that try to prevent this problem. In \gls{GA}, it is the
+mutation operator that sometimes generates a solution very far
+from the other population members, increasing its robustness. In
+\gls{PSO}, it is the fact that sometimes solutions get assigned
+very large changes in their velocities, especially when being very
+far removed from the attractors. However, as found in the
+literature, premature convergence still frequently occurs and
+necessitates several re-runs to make sure the global optimum is
+found.
 \\ \\
 A fact that can also not be ignored is that people tend to ``get
 used'' to the simplicity of such algorithms. It often becomes
@@ -590,7 +593,8 @@ evaluate per trial, even on a 32-node quadcore cluster (128
 processing units). In such cases it is much more fruitful (and
 efficient) to analyze that problem to bits, and make some
 reasonable assumptions that simplify the problem significantly,
-rather than go at it ``blindly'' and just use a GA to solve it.
+rather than go at it ``blindly'' and just use a \gls{GA} to solve
+it.
 \\ \\
 Despite these problems, they are still very useful, if only to get
 a good initial approximation to the minimum, or a first idea about
@@ -646,16 +650,16 @@ The interchange operator is extremely useful for multi-objective
 problems; when one population is completely non-dominated,
 interchanging individuals between populations will usually result
 in a \emph{dominated} population, which continues the search for
-the Pareto front, in stead of reporting convergence.
+the Pareto front, instead of reporting convergence.
 \\ \\
 In conclusion, GODLIKE does not aim to make either of the
 algorithms more efficient in terms of function evaluations,
 (rather, it tends to require \emph{more} function evaluations).
 However, the \emph{robustness} was aimed for, and until now, my
 simple experiments have indeed shown that hard-to-find global
-optima that could almost never be found by either GA, DE, ASA or
-PSO individually, \emph{could} be found by but their
-\emph{combined} efforts in GODLIKE.
+optima that could almost never be found by either \gls{GA},
+\gls{DE}, ASA or \gls{PSO} individually, \emph{could} be found by
+but their \emph{combined} efforts in GODLIKE.
 
 \section{GODLIKE in Detail}
 GODLIKE was written primarily with all of the above in mind, but
@@ -692,9 +696,10 @@ optimization. In this loop, the amount of individuals per
 optimizer, and the number of iterations that is to be carried out
 by each optimizer, is selected by randomly ``breaking up'' the
 user-selected (or default) values. For example, if 100 individuals
-are to be used in the algorithms GA, DE, and PSO, the algorithms
-get assigned for instance [45, 13, 42] or [6, 22, 72] individuals.
-Note that these numbers are chosen differently at every iteration.
+are to be used in the algorithms \gls{GA}, \gls{DE}, and
+\gls{PSO}, the algorithms get assigned for instance [45, 13, 42]
+or [6, 22, 72] individuals. Note that these numbers are chosen
+differently at every iteration.
 \\ \\
 Next, using these values, the number of desired populations are
 created (objects of type \texttt{pop\_single.m} or
@@ -751,8 +756,8 @@ which has properties
 
 \begin{description}
 
-  \item[algorithm] the optimization algorithm used (either 'GA',
-  'PSO', 'DE' or 'ASA').
+  \item[algorithm] the optimization algorithm used (either '\gls{GA}',
+  '\gls{PSO}', '\gls{DE}' or 'ASA').
 
   \item[funfcn] The objective function.
 
@@ -832,10 +837,10 @@ applied:
   carried out here.
 
   \item[check\_bounds (Hidden)] Checks whether offspring is generated within the given
-  bounds \texttt{lb} and \texttt{ub}. Also, for PSO specifically,
+  bounds \texttt{lb} and \texttt{ub}. Also, for \gls{PSO} specifically,
   the bounds on the new velocities are checked.
 
-  \item[initialize\_algorithms (Hidden)] PSO and ASA need some
+  \item[initialize\_algorithms (Hidden)] \gls{PSO} and ASA need some
   additional initialization (temperature, velocities, ...). With future expansions
   of GODLIKE in mind, I thought I make a separate method for this.
 
@@ -855,26 +860,26 @@ multi-objective functions need to be evaluated differently (there
 may be multiple functions, or a single function with
 two-dimensional output), one iteration now must call
 \texttt{non\_dominated\_sort} and \texttt{tournament\_selection}
-in stead of \texttt{replace\_parents}, and the PSO-algorithm must
-be initialized and used differently (see below).
+instead of \texttt{replace\_parents}, and the \gls{PSO}-algorithm
+must be initialized and used differently (see below).
 
-\section{PSO in Multi-objective Optimization}
-Using the ASA and DE optimizers (in stead of the usual GA) to
-create offspring populations for the NSGA-II method is quite
-straightforward. However, the PSO algorithm is more demanding; it
-needs to have some values for $lbest$, $gbest$ and $nbest$, which
-are not defined in an obvious way for multi-objective
-optimization. There are several papers in the literature that deal
-with this very problem. Some find reasonable results, but most
-perform quite poorly compared to similar algorithms. The best one
-I could find relied on a completely different algorithm (so
-\emph{not} NSGA-II), so for the time being, I chose to use
-another, worse one, that \emph{did} fit in GODLIKE's NSGA-II
-context.
+\section{\gls{PSO} in Multi-objective Optimization}
+Using the ASA and \gls{DE} optimizers (instead of the usual
+\gls{GA}) to create offspring populations for the NSGA-II method
+is quite straightforward. However, the \gls{PSO} algorithm is more
+demanding; it needs to have some values for $lbest$, $gbest$ and
+$nbest$, which are not defined in an obvious way for
+multi-objective optimization. There are several papers in the
+literature that deal with this very problem. Some find reasonable
+results, but most perform quite poorly compared to similar
+algorithms. The best one I could find relied on a completely
+different algorithm (so \emph{not} NSGA-II), so for the time
+being, I chose to use another, worse one, that \emph{did} fit in
+GODLIKE's NSGA-II context.
 \\ \\
-But, it is particularly in this context that PSO seems rather
-unsuited for the task. To remedy the problem with $lbest$, $gbest$
-and $nbest$, the following criteria seemed to work best:
+But, it is particularly in this context that \gls{PSO} seems
+rather unsuited for the task. To remedy the problem with $lbest$,
+$gbest$ and $nbest$, the following criteria seemed to work best:
 
 \begin{itemize}
 
@@ -895,33 +900,33 @@ crowding distance.
 
 \end{itemize}
 
-Despite these remedies, PSO remains the least powerful algorithm
-for multi-objective optimization; it doesn't really seem to be
-able to achieve convergence.
+Despite these remedies, \gls{PSO} remains the least powerful
+algorithm for multi-objective optimization; it doesn't really seem
+to be able to achieve convergence.
 
-\section{Known Problems and Issues} As mentioned above, using the PSO
+\section{Known Problems and Issues} As mentioned above, using the \gls{PSO}
 algorithm on multi-objective problems should be done sparingly, or
 at least in conjunction with another algorithm. Initially it seems
 to push the solutions towards the Pareto front quite fast, but I
 think this is more due to the non-dominated sorting and tournament
-selection. It is very hard to get convergence with PSO, but in
-conjunction with DE it does work reasonable.
+selection. It is very hard to get convergence with \gls{PSO}, but
+in conjunction with \gls{DE} it does work reasonable.
 \\ \\
-The 'A' in (A)SA is really not deserved. Basically I just used the
-simulated annealing written by Joachim Vandekerckhove (also on the
-FEX, file ID\#10548) and rewrote it to be suited for populations.
-Adapting the control parameters at each iteration, which is the
-true power of ASA, is not included now. As such it is probably the
-weakest algorithm for single-objective optimization, and the
-second-worst in multi-objective problems. However, I found it to
-still be useful sometimes, as it generates many solutions in
+The 'A' in (A)\gls{SA} is really not deserved. Basically I just
+used the simulated annealing written by Joachim Vandekerckhove
+(also on the FEX, file ID\#10548) and rewrote it to be suited for
+populations. Adapting the control parameters at each iteration,
+which is the true power of ASA, is not included now. As such it is
+probably the weakest algorithm for single-objective optimization,
+and the second-worst in multi-objective problems. However, I found
+it to still be useful sometimes, as it generates many solutions in
 \emph{all} regions of low function value.
 \\ \\
-For very large population sizes, the crossover operator in GA
-seems to take up very much computation time. I have no idea why
-that is, so if you do know why, please let me know. Also, the
-to-and-fro conversion between binary and real representations is
-relatively costly. While this is probably not a problem (the
+For very large population sizes, the crossover operator in
+\gls{GA} seems to take up very much computation time. I have no
+idea why that is, so if you do know why, please let me know. Also,
+the to-and-fro conversion between binary and real representations
+is relatively costly. While this is probably not a problem (the
 effect only becomes noticeable for population sizes larger than
 $\sim$4000), it's still something I'm baffled about. If anyone
 knows a better way to do it, please let me know.
@@ -933,7 +938,7 @@ constraint functions. In the current form, penalty-function
 methods must be used to incorporate constraint functions, but this
 is certainly not the best way to do it.
 \\ \\
-Naturally, I need to do some more research on using PSO in
+Naturally, I need to do some more research on using \gls{PSO} in
 multi-objective problems. It was found to be quite promising in
 the literature despite the implementation difficulties, but the
 current implementation in GODLIKE does not really solve the

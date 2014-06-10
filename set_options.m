@@ -40,6 +40,17 @@ function options = set_options(varargin)
 %                 fronts), while a Pareto front of much better quality is 
 %                 obtained if some additional shuffles are performed. The
 %                 default value is 2. 
+%     OutputFcn : Define an output function. Output functions are 
+%                 evaluated at every iteration of the algorithm. They
+%                 should be defined as
+%
+%                   stop = output_fcn(x, optimValues, state)
+%
+%                 When [stop] evaluates to 'true', GODLIKE will stop
+%                 immediately. In that case, it will return the best result
+%                 found thus far. The inputs [x], [optimValues] and 
+%                 [state] are described in more detail in the
+%                 documentation.
 %
 %   ======================================================================
 %   Options specific to the GODLIKE Algorithm:
@@ -201,6 +212,7 @@ function options = set_options(varargin)
         options.TolX          = 1e-4;
         options.TolFun        = 1e-4;
         options.AchieveFunVal = inf;
+        options.outputFcn     = [];
         
         % function evaluation
         options.num_objectives = 1;
@@ -245,7 +257,8 @@ function options = set_options(varargin)
         
         % errortrap
         if (mod(nargin, 2) ~= 0)
-            error('Please provide values for all the options.')
+            error('GODLIKE:set_options:not_enough_arguments',...
+                 'Please provide values for all the options.');
         end
         
         % loop through all the inputs, and use an "if-else cancer" to
@@ -317,7 +330,17 @@ function options = set_options(varargin)
                     throwwarning('AchieveFunVal', 'double', value);
                     continue;
                 end
-                options.AchieveFunVal = value;            
+                options.AchieveFunVal = value;  
+            elseif strcmpi(option, 'outputFcn')
+                if ~iscell(value) && ~isa(value, 'function_handle')
+                    throwwarning('outputFcn', 'cell or function_handle', value);
+                    continue;
+                end
+                if ~iscell(options.outputFcn)
+                    options.outputFcn = {value};
+                else
+                    options.outputFcn = value;
+                end
                 
             % options specific to Differential Evolution
             elseif strcmpi(option, 'Flb')
@@ -452,7 +475,7 @@ function options = set_options(varargin)
                 end
                 options.GODLIKE.ItersUb = value;
                 
-                % General Settings
+            % General Settings
             elseif strcmpi(option, 'SkipTest')
                 if ~isnumeric(value)
                     throwwarning('SkipTest', 'char', value);

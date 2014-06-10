@@ -1,5 +1,7 @@
 Aug 6, 2009
 ============================================================
+v2  - included support for output functions. 
+
 v1  - Objective functions are now allowed to have any 
       2-dimensional input shape; all functions must be able 
       to evaluate arrays of the same size and shape as [lb]

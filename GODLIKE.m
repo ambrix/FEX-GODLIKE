@@ -92,13 +92,15 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
 %               optimization. Negative is `bad', positive `good'. A 
 %               value of '0' indicates GODLIKE did not perform any 
 %               operations and exited prematurely. A value of '1' 
-%               indicates normal exit conditions. A value of '-1' 
-%               indicates a premature exit due to exceeding the preset
-%               maximum number of function evaluations. A value of 
-%               '-2' indicates that the amount of maximum GODLIKE 
-%               iterations has been exceeded, and a value of '-3' 
-%               indicates no optimum has been found (only for single-
-%               objective optimization).
+%               indicates normal exit conditions. A value of '2' meand
+%               that one of the provided output functions issued a
+%               stop-command. A value of '-1' indicates a premature 
+%               exit due to exceeding the preset maximum number of 
+%               function evaluations. A value of '-2' indicates that 
+%               the amount of maximum GODLIKE iterations has been 
+%               exceeded, and a value of '-3' indicates no optimum 
+%               has been found (only for single-objective 
+%               optimization).
 %
 %   output      structure, containing much additional information 
 %               about the optimization as a whole; see the manual
@@ -127,7 +129,7 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
        
     % basic check on input
     error(nargchk(4, inf, nargin));
-    
+        
     % more elaborate check on input (nested function)
     check_input;
         
@@ -144,15 +146,23 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
                     pop = cell(algorithms,1);        % cell array of [population] objects                  
     num_funevaluations  = 0;                         % number of function evaluations
     [converged, output] = check_convergence;         % initial output structure
+         outputFcnbreak = false;                     % exit condition for output functions
     
     % Initially, [output] is a large structure used to move data to and from all the
     % subfunctions. Later, it is turned into the output argument [output] by removing some
     % obsolete entries from the structure. 
+        
+    % if an output function's been given, evaluate them
+    state = 'init'; % initialization state
+    if ~isempty(options.outputFcn)
+        cellfun(@(x) x([], [], state), options.outputFcn, 'uniformoutput', false);        
+    end 
     
     % do an even more elaborate check (the behavior of this 
     % nested function is changed by passing the number of 
     % requested output arguments)
     check_input(nargout);
+    
     
     %% GODLIKE loop
     
@@ -188,7 +198,7 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
                 num_funevaluations = num_funevaluations + pop{i}.funevals - prev_FE;
                 
             else % Perform single iterations for all other algorithms 
-                counter = 0; % used for single-objective optimization
+                counter = 0; % used for single-objective optimization                
                 for j = 1:frac_iterations(i)
                     
                     % do single iteration on this population
@@ -229,14 +239,42 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
                     % display progress at every iteration
                     if ~isempty(options.display), display_progress; end
                     
+                    % evaluate the output functions
+                    if ~isempty(options.outputFcn)
+                        % most intensive part, here in the inner loop
+                        state = 'interrupt'; 
+                        % collect information
+                        optimValues.funcCount = pop{i}.funevals;
+                        optimValues.fval      = pop{i}.fitnesses;
+                        optimValues.iteration = pop{i}.iterations;
+                        optimValues.algorithm = pop{i}.algorithm;
+                        x                     = pop{i}.individuals;
+                        % evaluate the output functions
+                        stop = any( cellfun(@(y)y(x, optimValues, state), ...
+                                options.outputFcn, 'uniformoutput', false));
+                        % GODLIKE might need to stop here
+                        if stop
+                            % set the exit condition and break
+                            outputFcnbreak = true; break;
+                        end
+                    end
+                    
                 end % algorithm loop
             end
+            
+            % if one of the output functions returned a 
+            % stop request, break
+            if outputFcnbreak, break, end
             
             % if we have convergence inside the algorithm 
             % loop, break the main loop
             if converged, break, end
             
         end % main loop
+        
+        % if one of the output functions returned a
+        % stop request, break
+        if outputFcnbreak, break, end
                 
         % increase generation
         generation = generation + 1;
@@ -246,11 +284,26 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
         
         % check for convergence (and update output structure)
         [converged, output] = check_convergence(converged, output);
-                
+        
+        % evaluate the output functions
+        if ~isempty(options.outputFcn)
+            % end of a GODLIKE iteration
+            state = 'iter'; 
+            % collect the information
+            optimValues.algorithm = 'GODLIKE';
+            optimValues.funcCount = output.funcCount;
+            optimValues.fval      = output.global_best_funval;
+            optimValues.iteration = generation;
+            x                     = output.global_best_individual;
+            % call the output functions
+            cellfun(@(y)y(x, optimValues, state), options.outputFcn, 'uniformoutput', false);
+        end
+        
     end % GODLIKE loop
     
     % display final results
-    if ~isempty(options.display), display_progress; end
+    % (*NOT* if the output function requested to stop)
+    if ~outputFcnbreak && ~isempty(options.display), display_progress; end
     
     %% output values
     
@@ -266,6 +319,13 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
             'exitflag','most_efficient_point','most_efficient_fitnesses'});
         % and output what's left
         varargout{6} = output;
+        % in case the output function requested to stop
+        if outputFcnbreak
+            output.exitflag = 2;
+            output.message  = 'GODLIKE was terminated by one of the output functions.';
+            varargout{5} = output.exitflag ;
+            varargout{6} = output;
+        end
         
     % single-objective optimization
     elseif single 
@@ -281,6 +341,13 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
             outpt.iterations = output.iterations;
             % and output 
             varargout{4} = outpt;
+            % in case the output function requested to stop
+            if outputFcnbreak
+                outpt.exitflag = 2;                
+                outpt.message  = 'GODLIKE was terminated by one of the output functions.';
+                varargout{3} = outpt.exitflag;
+                varargout{4} = outpt;
+            end
             
         % but, no optimum might have been found
         else
@@ -296,8 +363,20 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
                 output.message);            
             % output 
             varargout{4} = output;
+            % in case the output function requested to stop
+            if outputFcnbreak                
+                output.message  = 'GODLIKE was terminated by one of the output functions.';
+                output.exitflag = 2;
+                varargout{3} = output.exitflag;
+                varargout{4} = output;
+            end
         end
     end
+    
+    % last call to output function
+    if ~isempty(options.outputFcn)
+        cellfun(@(y)y([],[], 'done'), options.outputFcn, 'uniformoutput', false);
+    end        
         
     %% nested functions
     
@@ -399,6 +478,11 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
                     'objective functions exceeds 3. The Pareto front can \n',...
                     'not be displayed. Set options.display to ''off'' or \n',...
                     '''on'' to supress this message.'])
+            end
+            if ~isempty(options.outputFcn) && ...
+               ~all( cellfun(@(x) isa(x, 'function_handle'), options.outputFcn))
+                error('GODLIKE:outputFcn_shouldbe_function_handle',...
+                    'All output functions should be function handles.')
             end
         end % if        
     end % nested function
@@ -664,7 +748,7 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
             options = pop{ii}.options;   
             
             % apply re-heating
-            options.ASA.T0 = options.ASA.T0 / options.ASA.ReHeating / generation;
+            options.ASA.T0 = options.ASA.T0 / options.ASA.ReHeating;
             
             % re-initialize
             if single, pop{ii} = pop_single(new_popinfo, pop{ii}, options); 
@@ -741,7 +825,7 @@ function varargout = GODLIKE(funfcn, popsize, lb, ub, varargin)
              % we're done
              return
              
-             % otherwise, update according to the current status of [pops]
+         % otherwise, update according to the current status of [pops]
          else
              
              % both per-algorithm and global check needs to be performed.
